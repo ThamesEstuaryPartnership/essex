@@ -115,7 +115,8 @@ latticeView(m1, m2)
 
 ## Viualising open and closed waterways
 
-Waterways open (green) after pass installation and waterways still remain closed (red).
+Waterways open (green) after pass installation and waterways still remain closed (red). 
+Also showing river habitat survey points.
 
 ```{r echo = FALSE, warning = FALSE, message=FALSE}
 
@@ -123,8 +124,15 @@ c <- geojsonio::geojson_read("E:/Work/Roadmap/Essex map/R Essex/slidy/4/barriers
 o <- geojsonio::geojson_read("E:/Work/Roadmap/Essex map/R Essex/slidy/4/barriers_open.geojson", what = "sp")
 rivers <- geojsonio::geojson_read("E:/Work/Roadmap/Essex map/R Essex/slidy/4/rivers.geojson", what = "sp")
 
+habitat <- geojsonio::geojson_read("E:/Work/Roadmap/Essex map/R Essex/slidy/4/caba_habitat.geojson", what = "sp")
+habitat$HMSclass <- as.numeric(habitat$HMSclass) 
+habitat$HQA <- as.numeric(habitat$HQA) 
+
 library(RColorBrewer)
 pal2 <- colorNumeric(c("green", "red"), domain = rivers$River_stat)
+
+pal3 <- colorNumeric("RdYlGn", domain = habitat$HMSclass, reverse = T)
+pal4 <- colorNumeric("RdYlBu", domain = habitat$HQA)
 
 leaflet() %>%
   addTiles(
@@ -133,10 +141,27 @@ leaflet() %>%
   addPolylines(data = rivers, group = "Rivers", color = ~pal2(rivers$River_stat), weight = 4, opacity = 1, fillOpacity = 1) %>%
   addCircles(data = o, color = "#008000", opacity = 1, fill = TRUE, group = "Passable barriers") %>%
   addCircles(data = c, color = "#990000", opacity = 1, fill = TRUE, group = "Impassable barriers") %>%
-  addLayersControl(baseGroups = c("Mapbox"), 
-                   overlayGroups = c("Passable barriers", "Impassable barriers", "Rivers"), position = "topright",
-                   options = layersControlOptions(collapsed = F)) %>%
-  addScaleBar(position = "bottomleft") %>%
+  addCircleMarkers(data = habitat, lat = ~Latitude, lng = ~Longitude,
+                       radius = 5, color = ~pal3(HMSclass),
+                       fillOpacity = 1, stroke = F, group = "Habitat Modification") %>%
+  addCircleMarkers(data = habitat, lat = ~Latitude, lng = ~Longitude,
+                       radius = 5, color = ~pal4(HQA),
+                       fillOpacity = 1, stroke = F, group = "Habitat Quality") %>%
+  hideGroup("Habitat Modification") %>%
+  hideGroup("Habitat Quality") %>%
   addEasyButton(easyButton(
     icon = "fa-globe", title = "Home",
-    onClick = JS("function(btn, map){ map.setZoom(9);}")))
+    onClick = JS("function(btn, map){ map.setZoom(9);}")))%>%
+  addLayersControl(baseGroups = c("Mapbox"), 
+                   overlayGroups = c("Passable barriers", "Impassable barriers", "Rivers", "Habitat Quality", "Habitat Modification"), position = "topleft",
+                   options = layersControlOptions(collapsed = F)) %>%
+  addLegend("bottomright", 
+                          colors = c("#066f3a", "#c9e881", "#ffffbf", "#fdae61", "#d7191c"),
+                          labels = c("Near-natural", "Predominantly unmodified", "Obviously modified", "Significantly modified", "Severly modified"),
+                          title = "Habitat Modification",
+                          opacity = 1) %>%
+  addLegend("bottomright", 
+                          colors = c("#d7191c", "#fdae61", "#ffffbf", "#abd9e9", "#2c7bb6"),
+                          labels = c("Poor", "Low", "Moderate", "High", "Diverse"),
+                          title = "Habitat Quality",
+                          opacity = 1)
