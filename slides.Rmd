@@ -11,12 +11,13 @@ library(leaflet)
 library(leaflet.extras)
 library(leaflet.esri)
 library(geojsonio)
+library(RColorBrewer)
 ```
 
 
 ## Spatial analysis of barrier data
 
-Using water network shapefile and up to date barrier data, river networks can be analysed to show both the effects of passable and impassable barriers on fish migration.
+Using water network shapefile and up to date barrier data, river networks can be analysed to show the effects of passable and impassable barriers on fish migration.
 
 For example zooming onto a smaller area in the Combined Essex catchment:
 
@@ -43,14 +44,15 @@ leaflet() %>%
 
 ## Splitting and measuring river length
 
-Using geoprocessing tools, the river network can be split and length of river can be calculated upstream of each barrier. (Zoom on and hover on the river section to show river length (m)).
+Using geospatial tools, the river network can be split and length of river can be calculated upstream of each barrier. 
+
+(Zoom on and hover on the river section to show river length (m)).
 
 ```{r echo = FALSE, warning = FALSE, message=FALSE}
 
 map <- geojsonio::geojson_read("E:/Work/Roadmap/Essex map/R Essex/slidy/2/barrier_snapped.geojson", what = "sp")
 rivers <- geojsonio::geojson_read("E:/Work/Roadmap/Essex map/R Essex/slidy/2/func_rivers.geojson", what = "sp")
 
-library(RColorBrewer)
 pal <- colorRampPalette(c("yellow", "green", "blue", "blue1", "blue2", "blue3", "red", "purple", "pink", "orange", "black", "grey", "brown", "lightcoral", "lightgreen", "lightsalmon", "lightslateblue"))
 
 leaflet() %>%
@@ -58,7 +60,7 @@ leaflet() %>%
     urlTemplate = '//{s}.tiles.mapbox.com/v3/jcheng.map-5ebohr46/{z}/{x}/{y}.png',
     attribution = 'Maps by <a href="http://www.mapbox.com/">Mapbox</a>', group = "Mapbox") %>%
   addPolylines(data = rivers, group = "Rivers", label = ~htmlEscape(~as.character(batDis2Mth)), color = ~pal(rivers$batNetID), weight = 4, opacity = 1, fillOpacity = 1) %>%
-  addCircles(data = map, color = "#b22870", weight = 8, opacity = 1, fill = TRUE, group = "Barriers") %>%
+  addCircles(data = map, color = "#b22870", weight = 6, opacity = 1, fill = TRUE, group = "Barriers") %>%
   addLayersControl(baseGroups = c("Mapbox"), 
                    overlayGroups = c("Barriers", "Rivers"), position = "topright",
                    options = layersControlOptions(collapsed = F)) %>%
@@ -71,7 +73,9 @@ leaflet() %>%
 
 ## Visualising those barriers that are passsable
 
-Passable barriers: where pass have been installed and WFD fish priority score <= 2 / Eel regulations priority score <= 2.
+Passable barriers: where pass have been installed AND WFD fish priority score <= 2 / Eel regulations priority score <= 2.
+
+Priority scores: 0 - No barrier to fish/eel; 1 - Easy barrier; 2 - Moderate barrier
 
 ```{r echo = FALSE, warning = FALSE, message=FALSE}
 
@@ -83,7 +87,7 @@ m1 <- leaflet() %>%
     urlTemplate = '//{s}.tiles.mapbox.com/v3/jcheng.map-5ebohr46/{z}/{x}/{y}.png',
     attribution = 'Maps by <a href="http://www.mapbox.com/">Mapbox</a>', group = "Mapbox") %>%
   addPolylines(data = rivers, group = "Rivers", label = ~htmlEscape(Name), color = "#2870b2", weight = 4, opacity = 1, fillOpacity = 1) %>%
-  addCircles(data = map1, color = "#c10c79", weight = 6, opacity = 1, fill = TRUE, group = "Passable for fish") %>%
+  addCircles(data = map1, color = "#540cc1", weight = 6, opacity = 1, fill = TRUE, group = "Passable for fish") %>%
   addLayersControl(baseGroups = c("Mapbox"), 
                    overlayGroups = c("Passable for fish", "Rivers"), position = "topright",
                    options = layersControlOptions(collapsed = F)) %>%
@@ -100,7 +104,7 @@ m2 <- leaflet() %>%
     urlTemplate = '//{s}.tiles.mapbox.com/v3/jcheng.map-5ebohr46/{z}/{x}/{y}.png',
     attribution = 'Maps by <a href="http://www.mapbox.com/">Mapbox</a>', group = "Mapbox") %>%
   addPolylines(data = rivers, group = "Rivers", label = ~htmlEscape(Name), color = "#2870b2", weight = 4, opacity = 1, fillOpacity = 1) %>%
-  addCircles(data = map2, color = "#a88ad4", weight = 6, opacity = 1, fill = TRUE, group = "Passable for eels") %>%
+  addCircles(data = map2, color = "#c1540c", weight = 6, opacity = 1, fill = TRUE, group = "Passable for eels") %>%
   addLayersControl(baseGroups = c("Mapbox"), 
                    overlayGroups = c("Passable for eels", "Rivers"), position = "topright",
                    options = layersControlOptions(collapsed = F)) %>%
@@ -115,13 +119,41 @@ latticeView(m1, m2)
 
 ## Viualising open and closed waterways
 
-Waterways open (green) after pass installation and waterways still remain closed (red). 
-Also showing river habitat survey points.
+Waterways open (green) and waterways still remain closed (red). 
 
 ```{r echo = FALSE, warning = FALSE, message=FALSE}
 
 c <- geojsonio::geojson_read("E:/Work/Roadmap/Essex map/R Essex/slidy/4/barriers_closed.geojson", what = "sp")
 o <- geojsonio::geojson_read("E:/Work/Roadmap/Essex map/R Essex/slidy/4/barriers_open.geojson", what = "sp")
+rivers <- geojsonio::geojson_read("E:/Work/Roadmap/Essex map/R Essex/slidy/4/rivers.geojson", what = "sp")
+
+pal2 <- colorNumeric(c("green", "red"), domain = rivers$River_stat)
+
+leaflet() %>%
+  addTiles(
+    urlTemplate = '//{s}.tiles.mapbox.com/v3/jcheng.map-5ebohr46/{z}/{x}/{y}.png',
+    attribution = 'Maps by <a href="http://www.mapbox.com/">Mapbox</a>', group = "Mapbox") %>%
+  addPolylines(data = rivers, group = "Rivers", color = ~pal2(rivers$River_stat), weight = 4, opacity = 1, fillOpacity = 1) %>%
+  addCircles(data = o, color = "#008000", opacity = 1, fill = TRUE, group = "Passable barriers") %>%
+  addCircles(data = c, color = "#990000", opacity = 1, fill = TRUE, group = "Impassable barriers") %>%
+  addScaleBar(position = "bottomleft") %>%
+  addEasyButton(easyButton(
+    icon = "fa-globe", title = "Home",
+    onClick = JS("function(btn, map){ map.setZoom(9);}")))%>%
+  addLayersControl(baseGroups = c("Mapbox"), 
+                   overlayGroups = c("Passable barriers", "Impassable barriers", "Rivers"), position = "topright",
+                   options = layersControlOptions(collapsed = F))
+```
+
+## Visualising river habitats
+
+Habitat Quality Assessment (HQA) is a broad indication of overall habitat diversity provided by natural features in the channel and river corridor.
+
+Habitat Modification Score (HMS) is an indication of artificial modification to river channel morphology.
+
+
+```{r echo = FALSE, warning = FALSE, message=FALSE}
+
 rivers <- geojsonio::geojson_read("E:/Work/Roadmap/Essex map/R Essex/slidy/4/rivers.geojson", what = "sp")
 
 habitat <- geojsonio::geojson_read("E:/Work/Roadmap/Essex map/R Essex/slidy/4/caba_habitat.geojson", what = "sp")
@@ -139,13 +171,11 @@ leaflet() %>%
     urlTemplate = '//{s}.tiles.mapbox.com/v3/jcheng.map-5ebohr46/{z}/{x}/{y}.png',
     attribution = 'Maps by <a href="http://www.mapbox.com/">Mapbox</a>', group = "Mapbox") %>%
   addPolylines(data = rivers, group = "Rivers", color = ~pal2(rivers$River_stat), weight = 4, opacity = 1, fillOpacity = 1) %>%
-  addCircles(data = o, color = "#008000", opacity = 1, fill = TRUE, group = "Passable barriers") %>%
-  addCircles(data = c, color = "#990000", opacity = 1, fill = TRUE, group = "Impassable barriers") %>%
   addCircleMarkers(data = habitat, lat = ~Latitude, lng = ~Longitude,
-                       radius = 5, color = ~pal3(HMSclass),
+                       radius = 4, color = ~pal3(HMSclass),
                        fillOpacity = 1, stroke = F, group = "Habitat Modification") %>%
   addCircleMarkers(data = habitat, lat = ~Latitude, lng = ~Longitude,
-                       radius = 5, color = ~pal4(HQA),
+                       radius = 4, color = ~pal4(HQA),
                        fillOpacity = 1, stroke = F, group = "Habitat Quality") %>%
   hideGroup("Habitat Modification") %>%
   hideGroup("Habitat Quality") %>%
@@ -153,7 +183,7 @@ leaflet() %>%
     icon = "fa-globe", title = "Home",
     onClick = JS("function(btn, map){ map.setZoom(9);}")))%>%
   addLayersControl(baseGroups = c("Mapbox"), 
-                   overlayGroups = c("Passable barriers", "Impassable barriers", "Rivers", "Habitat Quality", "Habitat Modification"), position = "topleft",
+                   overlayGroups = c("Rivers", "Habitat Quality", "Habitat Modification"), position = "topleft",
                    options = layersControlOptions(collapsed = F)) %>%
   addLegend("bottomright", 
                           colors = c("#066f3a", "#c9e881", "#ffffbf", "#fdae61", "#d7191c"),
@@ -165,3 +195,41 @@ leaflet() %>%
                           labels = c("Poor", "Low", "Moderate", "High", "Diverse"),
                           title = "Habitat Quality",
                           opacity = 1)
+```
+
+
+## Visualising WFD Fish Survey Results (FCS2)
+
+Metrics on river fish composition, abundance and prevalence. 
+
+```{r echo = FALSE, warning = FALSE, message=FALSE}
+
+rivers <- geojsonio::geojson_read("E:/Work/Roadmap/Essex map/R Essex/slidy/5/rivers.geojson", what = "sp")
+pal2 <- colorNumeric(c("green", "red"), domain = rivers$River_stat)
+
+fish <- geojsonio::geojson_read("E:/Work/Roadmap/Essex map/R Essex/slidy/5/wfd_fish.geojson", what = "sp")
+fish$Class <- as.numeric(fish$Class)
+pal5 <- colorNumeric(c("#fdae61", "#ffffbf", "#abd9e9", "#2c7bb6"), domain = fish$Class)
+
+leaflet() %>%
+  addTiles(
+    urlTemplate = '//{s}.tiles.mapbox.com/v3/jcheng.map-5ebohr46/{z}/{x}/{y}.png',
+    attribution = 'Maps by <a href="http://www.mapbox.com/">Mapbox</a>', group = "Mapbox") %>%
+  addPolylines(data = rivers, group = "Rivers", color = ~pal2(rivers$River_stat), weight = 4, opacity = 1, fillOpacity = 1) %>%
+  addCircleMarkers(data = fish, lat = ~Latitude, lng = ~Longitude,
+                       radius = 4, color = ~pal5(Class),
+                       fillOpacity = 1, stroke = F, group = "WFD Fish Survey", label = ~htmlEscape(~as.character(Descriptio))) %>%
+  addEasyButton(easyButton(
+    icon = "fa-globe", title = "Home",
+    onClick = JS("function(btn, map){ map.setZoom(9);}")))%>%
+  addLayersControl(baseGroups = c("Mapbox"), 
+                   overlayGroups = c("Rivers", "WFD Fish Survey"), position = "topleft",
+                   options = layersControlOptions(collapsed = F)) %>%
+   addLegend("bottomright", 
+                          colors = c("#fdae61", "#ffffbf", "#abd9e9", "#2c7bb6"),
+                          labels = c("Poor", "Moderate", "Good", "High"),
+                          title = "WFD Fish Survey",
+                          opacity = 1)
+```
+
+
