@@ -2,12 +2,13 @@
 output:
   html_document:
     fig_width: 10.5 
-    fig_height: 4
+    fig_height: 5
     theme: spacelab
     highlight: tango
 ---
 
 ```{r setup, include = FALSE}
+options(width = 800)
 library(htmltools)
 library(htmlwidgets)
 library(mapview)
@@ -20,17 +21,17 @@ library(RColorBrewer)
 
 
 
-## Spatial analysis of barrier data
+# Spatial analysis of barrier data
 
-Using water network shapefile and up to date barrier data, river networks can be analysed to show the effects of passable and impassable barriers on fish migration.
+$~$
 
-For example zooming onto a smaller area in the Combined Essex catchment:
+###Using water network shapefile and up to date barrier data, river networks can be analysed to show the effects of passable and impassable barriers on fish migration.
+
+###For example zooming onto a smaller area in the Combined Essex catchment:
 
 ```{r echo = FALSE, warning = FALSE, message=FALSE, tidy=FALSE}
-
 map <- geojsonio::geojson_read("E:/Work/Roadmap/Essex map/R Essex/slidy/1/barriers.geojson", what = "sp")
 rivers <- geojsonio::geojson_read("E:/Work/Roadmap/Essex map/R Essex/slidy/1/rivers.geojson", what = "sp")
-
 leaflet() %>%
   addTiles(
     urlTemplate = '//{s}.tiles.mapbox.com/v3/jcheng.map-5ebohr46/{z}/{x}/{y}.png',
@@ -50,17 +51,14 @@ $~$
 
 ## Splitting and measuring river length
 
-Using geospatial tools, the river network can be split and length of river can be calculated upstream of each barrier. 
+###Using geospatial tools, the river network can be split and length of river can be calculated upstream of each barrier. 
 
-(Zoom on and hover on the river section to show river length (m)).
+###(Zoom on and hover on the river section to show river length (m)).
 
 ```{r echo = FALSE, warning = FALSE, message=FALSE, tidy=FALSE}
-
 map <- geojsonio::geojson_read("E:/Work/Roadmap/Essex map/R Essex/slidy/2/barrier_snapped.geojson", what = "sp")
 rivers <- geojsonio::geojson_read("E:/Work/Roadmap/Essex map/R Essex/slidy/2/func_rivers.geojson", what = "sp")
-
 pal <- colorRampPalette(c("yellow", "green", "blue", "blue1", "blue2", "blue3", "red", "purple", "pink", "orange", "black", "grey", "brown", "lightcoral", "lightgreen", "lightsalmon", "lightslateblue"))
-
 leaflet() %>%
   addTiles(
     urlTemplate = '//{s}.tiles.mapbox.com/v3/jcheng.map-5ebohr46/{z}/{x}/{y}.png',
@@ -80,15 +78,13 @@ $~$
 
 ## Visualising those barriers that are passable
 
-Passable barriers: where pass have been installed AND WFD fish priority score <= 2 / Eel regulations priority score <= 2.
+###Passable barriers: where pass have been installed AND WFD fish priority score <= 2 / Eel regulations priority score <= 2.
 
-Priority scores: 0 - No barrier to fish/eel; 1 - Easy barrier; 2 - Moderate barrier
+###Priority scores: 0 - No barrier to fish/eel; 1 - Easy barrier; 2 - Moderate barrier
 
 ```{r echo = FALSE, warning = FALSE, message=FALSE, tidy=FALSE}
-
 map1 <- geojsonio::geojson_read("E:/Work/Roadmap/Essex map/R Essex/slidy/3/passable_fish.geojson", what = "sp")
 rivers <- geojsonio::geojson_read("E:/Work/Roadmap/Essex map/R Essex/slidy/3/func_rivers.geojson", what = "sp")
-
 leaflet() %>%
   addTiles(
     urlTemplate = '//{s}.tiles.mapbox.com/v3/jcheng.map-5ebohr46/{z}/{x}/{y}.png',
@@ -102,10 +98,8 @@ leaflet() %>%
   addEasyButton(easyButton(
     icon = "fa-globe", title = "Home",
     onClick = JS("function(btn, map){ map.setZoom(9);}")))
-
 map2 <- geojsonio::geojson_read("E:/Work/Roadmap/Essex map/R Essex/slidy/3/passable_eel.geojson", what = "sp")
 rivers <- geojsonio::geojson_read("E:/Work/Roadmap/Essex map/R Essex/slidy/3/func_rivers.geojson", what = "sp")
-
 leaflet() %>%
   addTiles(
     urlTemplate = '//{s}.tiles.mapbox.com/v3/jcheng.map-5ebohr46/{z}/{x}/{y}.png',
@@ -126,16 +120,13 @@ $~$
 
 ## Viualising open and closed waterways
 
-Waterways open (green) and waterways still remain closed (red). 
+###Waterways open (green) and waterways still remain closed (red). 
 
 ```{r echo = FALSE, warning = FALSE, message=FALSE, tidy=FALSE}
-
 c <- geojsonio::geojson_read("E:/Work/Roadmap/Essex map/R Essex/slidy/4/barriers_closed.geojson", what = "sp")
 o <- geojsonio::geojson_read("E:/Work/Roadmap/Essex map/R Essex/slidy/4/barriers_open.geojson", what = "sp")
 rivers <- geojsonio::geojson_read("E:/Work/Roadmap/Essex map/R Essex/slidy/4/rivers.geojson", what = "sp")
-
 pal2 <- colorNumeric(c("green", "red"), domain = rivers$River_stat)
-
 leaflet() %>%
   addTiles(
     urlTemplate = '//{s}.tiles.mapbox.com/v3/jcheng.map-5ebohr46/{z}/{x}/{y}.png',
@@ -156,25 +147,20 @@ $~$
 
 ## Visualising river habitats
 
-Habitat Quality Assessment (HQA) is a broad indication of overall habitat diversity provided by natural features in the channel and river corridor.
+###Habitat Quality Assessment (HQA) is a broad indication of overall habitat diversity provided by natural features in the channel and river corridor.
 
-Habitat Modification Score (HMS) is an indication of artificial modification to river channel morphology.
+###Habitat Modification Score (HMS) is an indication of artificial modification to river channel morphology.
 
 
 ```{r echo = FALSE, warning = FALSE, message=FALSE,tidy=FALSE}
-
 rivers <- geojsonio::geojson_read("E:/Work/Roadmap/Essex map/R Essex/slidy/4/rivers.geojson", what = "sp")
-
 habitat <- geojsonio::geojson_read("E:/Work/Roadmap/Essex map/R Essex/slidy/4/caba_habitat.geojson", what = "sp")
 habitat$HMSclass <- as.numeric(habitat$HMSclass) 
 habitat$HQA <- as.numeric(habitat$HQA) 
-
 library(RColorBrewer)
 pal2 <- colorNumeric(c("green", "red"), domain = rivers$River_stat)
-
 pal3 <- colorNumeric("RdYlGn", domain = habitat$HMSclass, reverse = T)
 pal4 <- colorNumeric("RdYlBu", domain = habitat$HQA)
-
 leaflet() %>%
   addTiles(
     urlTemplate = '//{s}.tiles.mapbox.com/v3/jcheng.map-5ebohr46/{z}/{x}/{y}.png',
@@ -210,17 +196,14 @@ $~$
 
 ## Visualising WFD Fish Survey Results (FCS2)
 
-Metrics on river fish composition, abundance and prevalence. 
+###Metrics on river fish composition, abundance and prevalence. 
 
 ```{r echo = FALSE, warning = FALSE, message=FALSE, tidy=FALSE}
-
 rivers <- geojsonio::geojson_read("E:/Work/Roadmap/Essex map/R Essex/slidy/5/rivers.geojson", what = "sp")
 pal2 <- colorNumeric(c("green", "red"), domain = rivers$River_stat)
-
 fish <- geojsonio::geojson_read("E:/Work/Roadmap/Essex map/R Essex/slidy/5/wfd_fish.geojson", what = "sp")
 fish$Class <- as.numeric(fish$Class)
 pal5 <- colorNumeric(c("#fdae61", "#ffffbf", "#abd9e9", "#2c7bb6"), domain = fish$Class)
-
 leaflet() %>%
   addTiles(
     urlTemplate = '//{s}.tiles.mapbox.com/v3/jcheng.map-5ebohr46/{z}/{x}/{y}.png',
