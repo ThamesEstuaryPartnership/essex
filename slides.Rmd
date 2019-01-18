@@ -1,9 +1,13 @@
 ---
-output: slidy_presentation
+output:
+  html_document:
+    fig_width: 10.5 
+    fig_height: 4
+    theme: spacelab
+    highlight: tango
 ---
 
 ```{r setup, include = FALSE}
-knitr::opts_chunk$set(fig.width = 13, fig.height = 4)
 library(htmltools)
 library(htmlwidgets)
 library(mapview)
@@ -15,13 +19,14 @@ library(RColorBrewer)
 ```
 
 
+
 ## Spatial analysis of barrier data
 
 Using water network shapefile and up to date barrier data, river networks can be analysed to show the effects of passable and impassable barriers on fish migration.
 
 For example zooming onto a smaller area in the Combined Essex catchment:
 
-```{r echo = FALSE, warning = FALSE, message=FALSE}
+```{r echo = FALSE, warning = FALSE, message=FALSE, tidy=FALSE}
 
 map <- geojsonio::geojson_read("E:/Work/Roadmap/Essex map/R Essex/slidy/1/barriers.geojson", what = "sp")
 rivers <- geojsonio::geojson_read("E:/Work/Roadmap/Essex map/R Essex/slidy/1/rivers.geojson", what = "sp")
@@ -41,6 +46,7 @@ leaflet() %>%
     onClick = JS("function(btn, map){ map.setZoom(9);}")))
 ```
 
+$~$
 
 ## Splitting and measuring river length
 
@@ -48,7 +54,7 @@ Using geospatial tools, the river network can be split and length of river can b
 
 (Zoom on and hover on the river section to show river length (m)).
 
-```{r echo = FALSE, warning = FALSE, message=FALSE}
+```{r echo = FALSE, warning = FALSE, message=FALSE, tidy=FALSE}
 
 map <- geojsonio::geojson_read("E:/Work/Roadmap/Essex map/R Essex/slidy/2/barrier_snapped.geojson", what = "sp")
 rivers <- geojsonio::geojson_read("E:/Work/Roadmap/Essex map/R Essex/slidy/2/func_rivers.geojson", what = "sp")
@@ -70,6 +76,7 @@ leaflet() %>%
     onClick = JS("function(btn, map){ map.setZoom(9);}")))
 ```
 
+$~$
 
 ## Visualising those barriers that are passable
 
@@ -77,12 +84,12 @@ Passable barriers: where pass have been installed AND WFD fish priority score <=
 
 Priority scores: 0 - No barrier to fish/eel; 1 - Easy barrier; 2 - Moderate barrier
 
-```{r echo = FALSE, warning = FALSE, message=FALSE}
+```{r echo = FALSE, warning = FALSE, message=FALSE, tidy=FALSE}
 
 map1 <- geojsonio::geojson_read("E:/Work/Roadmap/Essex map/R Essex/slidy/3/passable_fish.geojson", what = "sp")
 rivers <- geojsonio::geojson_read("E:/Work/Roadmap/Essex map/R Essex/slidy/3/func_rivers.geojson", what = "sp")
 
-m1 <- leaflet() %>%
+leaflet() %>%
   addTiles(
     urlTemplate = '//{s}.tiles.mapbox.com/v3/jcheng.map-5ebohr46/{z}/{x}/{y}.png',
     attribution = 'Maps by <a href="http://www.mapbox.com/">Mapbox</a>', group = "Mapbox") %>%
@@ -99,7 +106,7 @@ m1 <- leaflet() %>%
 map2 <- geojsonio::geojson_read("E:/Work/Roadmap/Essex map/R Essex/slidy/3/passable_eel.geojson", what = "sp")
 rivers <- geojsonio::geojson_read("E:/Work/Roadmap/Essex map/R Essex/slidy/3/func_rivers.geojson", what = "sp")
 
-m2 <- leaflet() %>%
+leaflet() %>%
   addTiles(
     urlTemplate = '//{s}.tiles.mapbox.com/v3/jcheng.map-5ebohr46/{z}/{x}/{y}.png',
     attribution = 'Maps by <a href="http://www.mapbox.com/">Mapbox</a>', group = "Mapbox") %>%
@@ -112,16 +119,16 @@ m2 <- leaflet() %>%
   addEasyButton(easyButton(
     icon = "fa-globe", title = "Home",
     onClick = JS("function(btn, map){ map.setZoom(9);}")))
-
-latticeView(m1, m2)
 ```
 
+
+$~$
 
 ## Viualising open and closed waterways
 
 Waterways open (green) and waterways still remain closed (red). 
 
-```{r echo = FALSE, warning = FALSE, message=FALSE}
+```{r echo = FALSE, warning = FALSE, message=FALSE, tidy=FALSE}
 
 c <- geojsonio::geojson_read("E:/Work/Roadmap/Essex map/R Essex/slidy/4/barriers_closed.geojson", what = "sp")
 o <- geojsonio::geojson_read("E:/Work/Roadmap/Essex map/R Essex/slidy/4/barriers_open.geojson", what = "sp")
@@ -145,6 +152,8 @@ leaflet() %>%
                    options = layersControlOptions(collapsed = F))
 ```
 
+$~$
+
 ## Visualising river habitats
 
 Habitat Quality Assessment (HQA) is a broad indication of overall habitat diversity provided by natural features in the channel and river corridor.
@@ -152,7 +161,7 @@ Habitat Quality Assessment (HQA) is a broad indication of overall habitat divers
 Habitat Modification Score (HMS) is an indication of artificial modification to river channel morphology.
 
 
-```{r echo = FALSE, warning = FALSE, message=FALSE}
+```{r echo = FALSE, warning = FALSE, message=FALSE,tidy=FALSE}
 
 rivers <- geojsonio::geojson_read("E:/Work/Roadmap/Essex map/R Essex/slidy/4/rivers.geojson", what = "sp")
 
@@ -197,12 +206,13 @@ leaflet() %>%
                           opacity = 1)
 ```
 
+$~$
 
 ## Visualising WFD Fish Survey Results (FCS2)
 
 Metrics on river fish composition, abundance and prevalence. 
 
-```{r echo = FALSE, warning = FALSE, message=FALSE}
+```{r echo = FALSE, warning = FALSE, message=FALSE, tidy=FALSE}
 
 rivers <- geojsonio::geojson_read("E:/Work/Roadmap/Essex map/R Essex/slidy/5/rivers.geojson", what = "sp")
 pal2 <- colorNumeric(c("green", "red"), domain = rivers$River_stat)
@@ -231,5 +241,3 @@ leaflet() %>%
                           title = "WFD Fish Survey",
                           opacity = 1)
 ```
-
-
