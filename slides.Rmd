@@ -71,7 +71,7 @@ leaflet() %>%
 ```
 
 
-## Visualising those barriers that are passsable
+## Visualising those barriers that are passable
 
 Passable barriers: where pass have been installed AND WFD fish priority score <= 2 / Eel regulations priority score <= 2.
 
