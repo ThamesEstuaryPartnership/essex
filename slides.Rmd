@@ -118,9 +118,9 @@ leaflet() %>%
 
 $~$
 
-## Viualising open and closed waterways
+## Visualising open and closed waterways
 
-###Waterways open (green) and waterways still remain closed (red). 
+###Waterways open (green - passable barriers) and waterways still remain closed (red - impassable barriers). 
 
 ```{r echo = FALSE, warning = FALSE, message=FALSE, tidy=FALSE}
 c <- geojsonio::geojson_read("E:/Work/Roadmap/Essex map/R Essex/slidy/4/barriers_closed.geojson", what = "sp")
