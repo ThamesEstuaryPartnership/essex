@@ -42,6 +42,7 @@ leaflet() %>%
                    overlayGroups = c("Barriers", "Rivers"), position = "topright",
                    options = layersControlOptions(collapsed = F)) %>%
   addScaleBar(position = "bottomleft") %>%
+  suspendScroll() %>%
   addEasyButton(easyButton(
     icon = "fa-globe", title = "Home",
     onClick = JS("function(btn, map){ map.setZoom(9);}")))
@@ -69,6 +70,7 @@ leaflet() %>%
                    overlayGroups = c("Barriers", "Rivers"), position = "topright",
                    options = layersControlOptions(collapsed = F)) %>%
   addScaleBar(position = "bottomleft") %>%
+  suspendScroll() %>%
   addEasyButton(easyButton(
     icon = "fa-globe", title = "Home",
     onClick = JS("function(btn, map){ map.setZoom(9);}")))
@@ -110,6 +112,7 @@ leaflet() %>%
                    overlayGroups = c("Passable for eels", "Rivers"), position = "topright",
                    options = layersControlOptions(collapsed = F)) %>%
   addScaleBar(position = "bottomleft") %>%
+  suspendScroll() %>%
   addEasyButton(easyButton(
     icon = "fa-globe", title = "Home",
     onClick = JS("function(btn, map){ map.setZoom(9);}")))
@@ -135,6 +138,7 @@ leaflet() %>%
   addCircles(data = o, color = "#008000", opacity = 1, fill = TRUE, group = "Passable barriers") %>%
   addCircles(data = c, color = "#990000", opacity = 1, fill = TRUE, group = "Impassable barriers") %>%
   addScaleBar(position = "bottomleft") %>%
+  suspendScroll() %>%
   addEasyButton(easyButton(
     icon = "fa-globe", title = "Home",
     onClick = JS("function(btn, map){ map.setZoom(9);}")))%>%
@@ -174,6 +178,7 @@ leaflet() %>%
                        fillOpacity = 1, stroke = F, group = "Habitat Quality") %>%
   hideGroup("Habitat Modification") %>%
   hideGroup("Habitat Quality") %>%
+  suspendScroll() %>%
   addEasyButton(easyButton(
     icon = "fa-globe", title = "Home",
     onClick = JS("function(btn, map){ map.setZoom(9);}")))%>%
@@ -218,6 +223,7 @@ leaflet() %>%
   addLayersControl(baseGroups = c("Mapbox"), 
                    overlayGroups = c("Rivers", "WFD Fish Survey"), position = "topleft",
                    options = layersControlOptions(collapsed = F)) %>%
+  suspendScroll() %>%
    addLegend("bottomright", 
                           colors = c("#fdae61", "#ffffbf", "#abd9e9", "#2c7bb6"),
                           labels = c("Poor", "Moderate", "Good", "High"),
