@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+  <title>Essex Roadmap 3D</title>
+  <style>
+    html,
+    body,
+    #viewDiv {
+      padding: 0;
+      margin: 0;
+      height: 100%;
+      width: 100%;
+    }
+		#buttonContainerDiv {
+			margin: 1px;
+			width: 30px;
+			height: 30px;
+		}
+		#btn1{
+		margin: 1px;
+		width: 30px;
+		height: 30px;
+		}
+
+  </style>
+
+  <link rel="stylesheet" href="https://js.arcgis.com/4.10/esri/css/main.css">
+  <script src="https://js.arcgis.com/4.10/"></script>
+
+  <script>
+    require([
+      "esri/Map",
+			"esri/widgets/Home",
+      "esri/views/SceneView",
+			"esri/layers/FeatureLayer",
+			"esri/layers/TileLayer",
+			"esri/widgets/BasemapToggle",
+			"esri/PopupTemplate",
+			"esri/Viewpoint",
+      "esri/widgets/Legend",
+			"dojo/dom",
+			"dojo/on",
+			"dojo/domReady!"
+    ], function(Map, Home, SceneView, FeatureLayer, TileLayer, BasemapToggle, PopupTemplate, Viewpoint, Legend, dom, on) {
+
+      var map = new Map({
+        basemap: "gray",
+      });
+
+      var view = new SceneView({
+        container: "viewDiv",
+        map: map,
+				camera: {
+				position: [1.63, 51.18, 30000],
+				tilt: 72,
+				heading: 320
+				}
+      });
+
+			var myPopupTemplate1 = {
+						content: "{Name}"
+					};
+
+			var myLineFeatureLayer = new FeatureLayer({
+		        url: "https://services6.arcgis.com/cFcfnHqSdtEfYu8A/arcgis/rest/services/rivers/FeatureServer",
+						outFields: ["*"],
+						popupTemplate: myPopupTemplate1
+		  });
+			map.add(myLineFeatureLayer);
+
+			var myPopupTemplate2 = {
+						title: "Barrier info",
+						content:
+						"<p>Feature: {Feature}</p>" +
+						"<p>Assessed: {Assessed}</p>" +
+						"<p>NGR: {NGR}</p>" +
+						"<p>Fish passage: {FishPassag}</p>" +
+						"<p>Fish measure: {FishMeasur}</p>" +
+						"<p>WFD score: {WFDScoreFi}</p>" +
+						"<p>Eel passage: {EelPassage}</p>" +
+						"<p>Eel measure: {EelMeasure}</p>" +
+						"<p>Priority for eels: {Priorityfo}</p>",
+        fieldInfos: [{
+          fieldName: "Feature",
+          format: {
+            digitSeparator: true, // Use a comma separator for large numbers
+            places: 0 // Sets the number of decimal places to 0 and rounds up
+          },
+					fieldName: "Assessed",
+          format: {
+            digitSeparator: true, // Use a comma separator for large numbers
+            places: 0 // Sets the number of decimal places to 0 and rounds up
+          },
+					fieldName: "NGR",
+          format: {
+            digitSeparator: true, // Use a comma separator for large numbers
+            places: 0 // Sets the number of decimal places to 0 and rounds up
+          },
+					fieldName: "Fish passage",
+          format: {
+            digitSeparator: true, // Use a comma separator for large numbers
+            places: 0 // Sets the number of decimal places to 0 and rounds up
+          },
+					fieldName: "Fish measure",
+          format: {
+            digitSeparator: true, // Use a comma separator for large numbers
+            places: 0 // Sets the number of decimal places to 0 and rounds up
+          },
+					fieldName: "WFD Score Fish",
+          format: {
+            digitSeparator: true, // Use a comma separator for large numbers
+            places: 0 // Sets the number of decimal places to 0 and rounds up
+          },
+					fieldName: "Eel passage",
+          format: {
+            digitSeparator: true, // Use a comma separator for large numbers
+            places: 0 // Sets the number of decimal places to 0 and rounds up
+          },
+					fieldName: "Eel measure",
+          format: {
+            digitSeparator: true, // Use a comma separator for large numbers
+            places: 0 // Sets the number of decimal places to 0 and rounds up
+          },
+					fieldName: "Priority for eels",
+          format: {
+            digitSeparator: true, // Use a comma separator for large numbers
+            places: 0 // Sets the number of decimal places to 0 and rounds up
+          }
+				}]
+			};
+
+			var myPointFeatureLayer = new FeatureLayer({
+		        url: "https://services6.arcgis.com/cFcfnHqSdtEfYu8A/arcgis/rest/services/attendees/FeatureServer",
+						outFields: ["*"],
+						popupTemplate: myPopupTemplate2
+		  });
+			map.add(myPointFeatureLayer);
+
+			var myHome = new Home({
+	        view: view
+	      });
+	    view.ui.add(myHome, "top-left");
+
+      var legend = new Legend({
+              view: view,
+              layerInfos: [{
+                layer: myLineFeatureLayer,
+                title: "Legend"
+              }]
+            });
+
+      view.ui.add(legend, "top-right");
+
+      var toggle = new BasemapToggle({
+          view: view,
+          nextBasemap: "satellite",
+					ground: "world-elevation"
+        });
+
+        // Add widget to the top right corner of the view
+    	view.ui.add(toggle, "top-right");
+
+			myViewPoint1 = new Viewpoint ({
+				camera: {
+				position: [0.7, 51.85, 190000],
+				tilt: 0,
+				heading: 0
+				},
+			});
+
+			on(dom.byId("btn1"), "click", doSomething1);
+
+			function doSomething1() {
+				view.goTo(myViewPoint1);
+			}
+
+			view.ui.add("buttonContainerDiv", "top-left");
+
+    });
+  </script>
+</head>
+
+<body>
+  <div id="viewDiv"></div>
+	<div id="buttonContainerDiv" align="right">
+		<button id="btn1">2D</button>
+		</div>
+</body>
+</html>
