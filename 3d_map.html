@@ -147,11 +147,21 @@
               view: view,
               layerInfos: [{
                 layer: myLineFeatureLayer,
-                title: "Legend"
+                title: "Migration"
               }]
             });
 
       view.ui.add(legend, "top-right");
+
+      var legend1 = new Legend({
+              view: view,
+              layerInfos: [{
+                layer: myPointFeatureLayer,
+                title: "Barriers"
+              }]
+            });
+
+      view.ui.add(legend1, "top-right");
 
       var toggle = new BasemapToggle({
           view: view,
